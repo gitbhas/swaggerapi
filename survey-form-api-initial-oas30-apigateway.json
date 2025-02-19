@@ -91,27 +91,78 @@
                     "required": true,
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Name of the person",
-                                        "example": "John Doe"
+                                "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "Name of the person",
+                                                "minLength": 1
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "description": "Email address"
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "description": "Additional message"
+                                            }
+                                        },
+                                        "required": ["name", "email"]
                                     },
-                                    "email": {
-                                        "type": "string",
-                                        "description": "Email address",
-                                        "format": "email",
-                                        "example": "john@example.com"
-                                    },
-                                    "message": {
-                                        "type": "string",
-                                        "description": "Additional message",
-                                        "example": "This is a test message"
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the person",
+                                                    "minLength": 1
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "description": "Email address"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "description": "Additional message"
+                                                }
+                                            },
+                                            "required": ["name", "email"]
+                                        },
+                                        "minItems": 1
+                                    }
+                                ]
+                            },
+                            "examples": {
+                                "single": {
+                                    "summary": "Single Record",
+                                    "value": {
+                                        "name": "John Doe",
+                                        "email": "john@example.com",
+                                        "message": "Single record"
                                     }
                                 },
-                                "required": ["name", "email"]
+                                "multiple": {
+                                    "summary": "Multiple Records",
+                                    "value": [
+                                        {
+                                            "name": "John Doe",
+                                            "email": "john@example.com",
+                                            "message": "First record"
+                                        },
+                                        {
+                                            "name": "Jane Smith",
+                                            "email": "jane@example.com",
+                                            "message": "Second record"
+                                        }
+                                    ]
+                                }
                             }
                         }
                     }
