@@ -1,4 +1,7 @@
-{
+{ "options": {
+    "x-amazon-apigateway-documentation": {
+        "hidden": true
+    },
     "openapi": "3.0.1",
     "info": {
         "title": "survey-form-api",
