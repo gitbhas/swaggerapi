@@ -1,8 +1,4 @@
-{ "options": {
-    "x-amazon-apigateway-documentation": {
-        "hidden": true
-    },
-    "openapi": "3.0.1",
+{  "openapi": "3.0.1",
     "info": {
         "title": "survey-form-api",
         "version": "2025-02-16T18:53:47Z"
@@ -127,6 +123,9 @@
                 }
             },
             "options": {
+                 "x-amazon-apigateway-documentation": {
+                                       "hidden": true
+                                },
                 "responses": {
                     "200": {
                         "description": "200 response",
