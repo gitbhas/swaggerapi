@@ -1,59 +1,39 @@
 {
     "openapi": "3.0.1",
     "info": {
-        "title": "file-upload-s3",
-        "version": "2025-02-20T23:41:55Z"
+        "title": "S3 File Upload API",
+        "version": "2024-02-20"
     },
-    "servers": [{
-        "url": "https://txlkoteyb9.execute-api.us-east-1.amazonaws.com/{basePath}",
-        "variables": {
-            "basePath": {
-                "default": "initial"
-            }
+    "servers": [
+        {
+            "url": "https://txlkoteyb9.execute-api.us-east-1.amazonaws.com/initial",
+            "description": "API Gateway endpoint"
         }
-    }],
-    "security": [{
-        "api_key": []
-    }],
+    ],
     "paths": {
         "/{bucket}/{filename}": {
             "put": {
-                "summary": "Upload file to S3",
-                "description": "Upload a file to specified S3 bucket",
-                "parameters": [{
-                    "name": "filename",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
+                "parameters": [
+                    {
+                        "name": "bucket",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
-                    "description": "Name of the file in S3"
-                }, {
-                    "name": "bucket",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    },
-                    "description": "S3 bucket name"
-                }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/octet-stream": {
-                            "schema": {
-                                "type": "string",
-                                "format": "binary"
-                            }
+                    {
+                        "name": "filename",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
-                },
-                "security": [{
-                    "api_key": []
-                }],
+                ],
                 "responses": {
                     "200": {
-                        "description": "File uploaded successfully",
+                        "description": "200 response",
                         "headers": {
                             "Access-Control-Allow-Origin": {
                                 "schema": {
@@ -68,13 +48,6 @@
                             "Access-Control-Allow-Headers": {
                                 "schema": {
                                     "type": "string"
-                                }
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Empty"
                                 }
                             }
                         }
@@ -82,48 +55,30 @@
                 },
                 "x-amazon-apigateway-integration": {
                     "credentials": "arn:aws:iam::012693954776:role/file-upload-gwapi-role",
-                    "httpMethod": "PUT",
                     "uri": "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{filename}",
                     "responses": {
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
+                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.dk0ld3ltqxcqs.amplifyapp.com'",
+                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
                             }
                         }
                     },
                     "requestParameters": {
-                        "integration.request.path.filename": "method.request.path.filename",
-                        "integration.request.path.bucket": "method.request.path.bucket"
+                        "integration.request.path.bucket": "method.request.path.bucket",
+                        "integration.request.path.filename": "method.request.path.filename"
                     },
                     "passthroughBehavior": "when_no_match",
-                    "type": "aws",
-                    "timeoutInMillis": 29000
+                    "httpMethod": "PUT",
+                    "type": "aws"
                 }
             },
             "options": {
-                "summary": "CORS support",
-                "description": "Enable CORS by returning correct headers",
-                "parameters": [{
-                    "name": "bucket",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    }
-                }, {
-                    "name": "filename",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    }
-                }],
                 "responses": {
                     "200": {
-                        "description": "CORS enabled response",
+                        "description": "200 response",
                         "headers": {
                             "Access-Control-Allow-Origin": {
                                 "schema": {
@@ -139,57 +94,27 @@
                                 "schema": {
                                     "type": "string"
                                 }
-                            },
-                            "Access-Control-Expose-Headers": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Empty"
-                                }
                             }
                         }
                     }
                 },
                 "x-amazon-apigateway-integration": {
-                    "type": "mock",
-                    "requestTemplates": {
-                        "application/json": "{ \"statusCode\": 200 }"
-                    },
                     "responses": {
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Expose-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-                            },
-                            "responseTemplates": {
-                                "application/json": "{}"
+                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.dk0ld3ltqxcqs.amplifyapp.com'",
+                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
                             }
                         }
-                    }
+                    },
+                    "requestTemplates": {
+                        "application/json": "{\"statusCode\": 200}"
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "type": "mock"
                 }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "Empty": {
-                "title": "Empty Schema",
-                "type": "object"
-            }
-        },
-        "securitySchemes": {
-            "api_key": {
-                "type": "apiKey",
-                "name": "x-api-key",
-                "in": "header"
             }
         }
     },
