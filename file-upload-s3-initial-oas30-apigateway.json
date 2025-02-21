@@ -96,7 +96,7 @@
                     },
                     "requestParameters": {
                         "integration.request.path.filename": "method.request.path.filename",
-                        "integration.request.path.bucket": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        "integration.request.path.bucket": "method.request.path.bucket"
                     },
                     "passthroughBehavior": "when_no_match",
                     "type": "aws",
