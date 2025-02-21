@@ -45,17 +45,6 @@
                                 "type": "string",
                                 "format": "binary"
                             }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "file": {
-                                        "type": "string",
-                                        "format": "binary"
-                                    }
-                                }
-                            }
                         }
                     }
                 },
@@ -100,8 +89,8 @@
                             "statusCode": "200",
                             "responseParameters": {
                                 "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
                             }
                         }
                     },
@@ -110,10 +99,13 @@
                         "integration.request.path.bucket": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
                     },
                     "passthroughBehavior": "when_no_match",
-                    "type": "aws"
+                    "type": "aws",
+                    "timeoutInMillis": 29000
                 }
             },
             "options": {
+                "summary": "CORS support",
+                "description": "Enable CORS by returning correct headers",
                 "parameters": [{
                     "name": "bucket",
                     "in": "path",
@@ -131,7 +123,7 @@
                 }],
                 "responses": {
                     "200": {
-                        "description": "200 response",
+                        "description": "CORS enabled response",
                         "headers": {
                             "Access-Control-Allow-Origin": {
                                 "schema": {
@@ -147,6 +139,11 @@
                                 "schema": {
                                     "type": "string"
                                 }
+                            },
+                            "Access-Control-Expose-Headers": {
+                                "schema": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "content": {
@@ -159,21 +156,24 @@
                     }
                 },
                 "x-amazon-apigateway-integration": {
+                    "type": "mock",
+                    "requestTemplates": {
+                        "application/json": "{ \"statusCode\": 200 }"
+                    },
                     "responses": {
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Expose-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                            },
+                            "responseTemplates": {
+                                "application/json": "{}"
                             }
                         }
-                    },
-                    "requestTemplates": {
-                        "application/json": "{\"statusCode\": 200}"
-                    },
-                    "passthroughBehavior": "when_no_match",
-                    "type": "mock"
+                    }
                 }
             }
         }
@@ -193,5 +193,7 @@
             }
         }
     },
-    "x-amazon-apigateway-binary-media-types": ["*/*"]
+    "x-amazon-apigateway-binary-media-types": [
+        "*/*"
+    ]
 }
