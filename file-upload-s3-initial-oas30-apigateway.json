@@ -13,6 +13,11 @@
     "paths": {
         "/{bucket}/{filename}": {
             "put": {
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "bucket",
@@ -51,6 +56,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 },
                 "x-amazon-apigateway-integration": {
