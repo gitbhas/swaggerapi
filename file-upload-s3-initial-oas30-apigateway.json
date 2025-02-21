@@ -34,11 +34,54 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/octet-stream": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        },
+                        "image/jpeg": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        },
+                        "image/png": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        },
+                        "application/pdf": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        },
+                        "text/plain": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "200": {
-                        "description": "200 response",
+                        "description": "Successful upload",
                         "headers": {
                             "Access-Control-Allow-Origin": {
                                 "schema": {
@@ -55,10 +98,34 @@
                                     "type": "string"
                                 }
                             }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "403": {
                         "description": "Forbidden"
+                    },
+                    "413": {
+                        "description": "Payload Too Large"
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type"
                     }
                 },
                 "x-amazon-apigateway-integration": {
@@ -76,11 +143,13 @@
                     },
                     "requestParameters": {
                         "integration.request.path.bucket": "method.request.path.bucket",
-                        "integration.request.path.filename": "method.request.path.filename"
+                        "integration.request.path.filename": "method.request.path.filename",
+                        "integration.request.header.Content-Type": "method.request.header.Content-Type"
                     },
                     "passthroughBehavior": "when_no_match",
                     "httpMethod": "PUT",
-                    "type": "aws"
+                    "type": "aws",
+                    "timeoutInMillis": 29000
                 }
             },
             "options": {
@@ -136,6 +205,10 @@
         }
     },
     "x-amazon-apigateway-binary-media-types": [
-        "*/*"
+        "application/octet-stream",
+        "image/jpeg",
+        "image/png",
+        "application/pdf",
+        "text/plain"
     ]
 }
