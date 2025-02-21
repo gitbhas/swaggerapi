@@ -18,29 +18,65 @@
     "paths": {
         "/{bucket}/{filename}": {
             "put": {
+                "summary": "Upload file to S3",
+                "description": "Upload a file to specified S3 bucket",
                 "parameters": [{
                     "name": "filename",
                     "in": "path",
                     "required": true,
                     "schema": {
                         "type": "string"
-                    }
+                    },
+                    "description": "Name of the file in S3"
                 }, {
                     "name": "bucket",
                     "in": "path",
                     "required": true,
                     "schema": {
                         "type": "string"
-                    }
+                    },
+                    "description": "S3 bucket name"
                 }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/octet-stream": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "security": [{
                     "api_key": []
                 }],
                 "responses": {
                     "200": {
-                        "description": "200 response",
+                        "description": "File uploaded successfully",
                         "headers": {
                             "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Access-Control-Allow-Methods": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Access-Control-Allow-Headers": {
                                 "schema": {
                                     "type": "string"
                                 }
@@ -63,7 +99,9 @@
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
                             }
                         }
                     },
@@ -126,7 +164,7 @@
                             "statusCode": "200",
                             "responseParameters": {
                                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
                             }
                         }
