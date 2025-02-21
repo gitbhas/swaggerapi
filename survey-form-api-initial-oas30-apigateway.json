@@ -1,71 +1,177 @@
 {
     "openapi": "3.0.1",
     "info": {
-        "title": "file-upload-s3",
-        "version": "2025-02-20T23:41:55Z"
+        "title": "survey-form-api",
+        "version": "2025-02-16T18:53:47Z",
+        "description": "API for survey form operations"
     },
     "servers": [{
-        "url": "https://txlkoteyb9.execute-api.us-east-1.amazonaws.com/{basePath}",
+        "url": "https://9c03dh9mv2.execute-api.us-east-1.amazonaws.com/{basePath}",
         "variables": {
             "basePath": {
                 "default": "initial"
             }
         }
     }],
-    "security": [{
-        "api_key": []
-    }],
     "paths": {
-        "/{bucket}/{filename}": {
-            "put": {
-                "summary": "Upload file to S3",
-                "description": "Upload a file to specified S3 bucket",
+        "/search-dynamo": {
+            "get": {
+                "summary": "Search records in DynamoDB",
+                "description": "Search for records using name parameter",
                 "parameters": [{
-                    "name": "filename",
-                    "in": "path",
+                    "name": "name",
+                    "in": "query",
+                    "description": "Name to search for",
                     "required": true,
                     "schema": {
                         "type": "string"
                     },
-                    "description": "Name of the file in S3"
-                }, {
-                    "name": "bucket",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    },
-                    "description": "S3 bucket name"
+                    "example": "John"
                 }],
+                "responses": {
+                    "200": {
+                        "description": "Successful search response",
+                        "headers": {
+                            "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Items": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-request-validator": "Validate query string parameters and headers",
+                "x-amazon-apigateway-integration": {
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:012693954776:function:ddps-dev-lambda:search-dynamo/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            }
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "timeoutInMillis": 29000,
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/post-dynamo": {
+            "post": {
+                "tags": ["DynamoDB Operations"],
+                "summary": "Create a new record",
+                "description": "Add a new record to DynamoDB",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/octet-stream": {
-                            "schema": {
-                                "type": "string",
-                                "format": "binary"
+                        "application/json": {
+                                "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "Name of the person",
+                                                "minLength": 1
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "description": "Email address"
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "description": "Additional message"
+                                            }
+                                        },
+                                        "required": ["name", "email"]
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the person",
+                                                    "minLength": 1
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "description": "Email address"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "description": "Additional message"
+                                                }
+                                            },
+                                            "required": ["name", "email"]
+                                        },
+                                        "minItems": 1
+                                    }
+                                ]
+                            },
+                            "examples": {
+                                "single": {
+                                    "summary": "Single Record",
+                                    "value": {
+                                        "name": "John Doe",
+                                        "email": "john@example.com",
+                                        "message": "Single record"
+                                    }
+                                },
+                                "multiple": {
+                                    "summary": "Multiple Records",
+                                    "value": [
+                                        {
+                                            "name": "John Doe",
+                                            "email": "john@example.com",
+                                            "message": "First record"
+                                        },
+                                        {
+                                            "name": "Jane Smith",
+                                            "email": "jane@example.com",
+                                            "message": "Second record"
+                                        }
+                                    ]
+                                }
                             }
                         }
                     }
                 },
-                "security": [{
-                    "api_key": []
-                }],
                 "responses": {
                     "200": {
-                        "description": "File uploaded successfully",
+                        "description": "Record created successfully",
                         "headers": {
                             "Access-Control-Allow-Origin": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Methods": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Headers": {
                                 "schema": {
                                     "type": "string"
                                 }
@@ -74,106 +180,36 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Empty"
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record created successfully"
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 },
                 "x-amazon-apigateway-integration": {
-                    "credentials": "arn:aws:iam::012693954776:role/file-upload-gwapi-role",
-                    "httpMethod": "PUT",
-                    "uri": "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{filename}",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:012693954776:function:ddps-dev-lambda:post-dynamo/invocations",
                     "responses": {
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
                             }
                         }
                     },
-                    "requestParameters": {
-                        "integration.request.path.filename": "method.request.path.filename",
-                        "integration.request.path.bucket": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+                    "requestTemplates": {
+                        "application/json": "{\r\n  \"body\" : $input.json('$')\r\n}"
                     },
                     "passthroughBehavior": "when_no_match",
-                    "type": "aws",
-                    "timeoutInMillis": 29000
-                }
-            },
-            "options": {
-                "summary": "CORS support",
-                "description": "Enable CORS by returning correct headers",
-                "parameters": [{
-                    "name": "bucket",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    }
-                }, {
-                    "name": "filename",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    }
-                }],
-                "responses": {
-                    "200": {
-                        "description": "CORS enabled response",
-                        "headers": {
-                            "Access-Control-Allow-Origin": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Methods": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Headers": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Expose-Headers": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Empty"
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "mock",
-                    "requestTemplates": {
-                        "application/json": "{ \"statusCode\": 200 }"
-                    },
-                    "responses": {
-                        "default": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Expose-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-                            },
-                            "responseTemplates": {
-                                "application/json": "{}"
-                            }
-                        }
-                    }
+                    "timeoutInMillis": 29000,
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
                 }
             }
         }
@@ -184,16 +220,12 @@
                 "title": "Empty Schema",
                 "type": "object"
             }
-        },
-        "securitySchemes": {
-            "api_key": {
-                "type": "apiKey",
-                "name": "x-api-key",
-                "in": "header"
-            }
         }
     },
-    "x-amazon-apigateway-binary-media-types": [
-        "*/*"
-    ]
+    "x-amazon-apigateway-request-validators": {
+        "Validate query string parameters and headers": {
+            "validateRequestParameters": true,
+            "validateRequestBody": false
+        }
+    }
 }
