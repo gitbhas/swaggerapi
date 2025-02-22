@@ -1,4 +1,4 @@
-"openapi": "3.0.1",
+{"openapi": "3.0.1",
     "info": {
         "title": "file-upload-s3",
         "version": "2025-02-22T02:38:56Z"
