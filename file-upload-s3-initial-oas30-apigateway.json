@@ -1,26 +1,18 @@
-{
-    "openapi": "3.0.1",
+"openapi": "3.0.1",
     "info": {
-        "title": "S3 File Upload API",
-        "version": "2024-02-20"
+        "title": "file-upload-s3",
+        "version": "2025-02-22T02:38:56Z"
     },
-    "servers": [
-        {
+    "servers": [ {
             "url": "https://txlkoteyb9.execute-api.us-east-1.amazonaws.com/initial",
             "description": "API Gateway endpoint"
-        }
-    ],
+        }],
     "paths": {
         "/{bucket}/{filename}": {
             "put": {
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ],
                 "parameters": [
                     {
-                        "name": "bucket",
+                        "name": "filename",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -28,7 +20,7 @@
                         }
                     },
                     {
-                        "name": "filename",
+                        "name": "bucket",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -39,119 +31,83 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/octet-stream": {
+                        "multipart/form-data": {
                             "schema": {
-                                "type": "string",
-                                "format": "binary"
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "File to upload"
+                                    }
+                                }
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful upload",
-                        "headers": {
-                            "Access-Control-Allow-Origin": {
+                        "description": "File uploaded successfully",
+                        "content": {
+                            "application/json": {
                                 "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Methods": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Headers": {
-                                "schema": {
-                                    "type": "string"
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "filename": {
+                                            "type": "string"
+                                        },
+                                        "bucket": {
+                                            "type": "string"
+                                        }
+                                    }
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Bad Request"
-                    },
-                    "403": {
-                        "description": "Forbidden"
+                        "description": "Bad request - invalid file or filename",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
                 "x-amazon-apigateway-integration": {
                     "credentials": "arn:aws:iam::012693954776:role/file-upload-gwapi-role",
+                    "httpMethod": "PUT",
                     "uri": "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{filename}",
                     "responses": {
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
                             }
                         }
                     },
                     "requestParameters": {
-                        "integration.request.path.bucket": "method.request.path.bucket",
-                        "integration.request.path.filename": "method.request.path.filename"
+                        "integration.request.path.filename": "method.request.path.filename",
+                        "integration.request.path.bucket": "method.request.path.bucket"
                     },
                     "passthroughBehavior": "when_no_match",
-                    "httpMethod": "PUT",
-                    "type": "aws",
-                    "timeoutInMillis": 29000
-                }
-            },
-            "options": {
-                "responses": {
-                    "200": {
-                        "description": "200 response",
-                        "headers": {
-                            "Access-Control-Allow-Origin": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Methods": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            },
-                            "Access-Control-Allow-Headers": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-amazon-apigateway-integration": {
-                    "responses": {
-                        "default": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
-                            }
-                        }
-                    },
-                    "requestTemplates": {
-                        "application/json": "{\"statusCode\": 200}"
-                    },
-                    "passthroughBehavior": "when_no_match",
-                    "type": "mock"
+                    "type": "aws"
                 }
             }
         }
-    },
-    "components": {
-        "securitySchemes": {
-            "api_key": {
-                "type": "apiKey",
-                "name": "x-api-key",
-                "in": "header"
-            }
-        }
-    },
-    "x-amazon-apigateway-binary-media-types": [
-        "application/octet-stream",
-        "*/*"
-    ]
+    }
 }
