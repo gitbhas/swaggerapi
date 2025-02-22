@@ -82,7 +82,7 @@
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.d2uj52ga7qjgjz.amplifyapp.com'",
+                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.d3nhcc8k497r3m.amplifyapp.com'",
                                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
                             }
@@ -126,7 +126,7 @@
                         "default": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.d2uj52ga7qjgjz.amplifyapp.com'",
+                                "method.response.header.Access-Control-Allow-Origin": "'https://s3fileupload.d3nhcc8k497r3m.amplifyapp.com'",
                                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT'",
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Origin'"
                             }
